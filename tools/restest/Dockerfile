@@ -10,5 +10,4 @@ COPY ./apis/*/specifications/* /specifications/
 
 WORKDIR /tool
 
-CMD sh config.sh && \
-    while true; do java -jar restest-cli.jar -g -e user_config.properties; done
+CMD sh config.sh && sh run.sh
