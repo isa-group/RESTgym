@@ -1,9 +1,11 @@
-echo "host=http://localhost:$PORT" >> resources/config.properties
-cp /specifications/"$API"-openapi.json resources/openapi.json
+#!/bin/bash
+
+echo "host=http://localhost:$PORT" >> common/config.properties
+cp /specifications/"$API"-openapi.json common/openapi.json
 
 # Generate configuration based on the specification
-java -jar restest-cli.jar -c resources/openapi.json
+java -jar restest-cli.jar -c common/openapi.json
 
 # Necessary files for RESTest in src/main/resources
 mkdir -p src/main/
-mv resources/ src/main/resources/
+mv common/ src/main/resources/

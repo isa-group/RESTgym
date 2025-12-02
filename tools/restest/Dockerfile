@@ -10,4 +10,4 @@ COPY ./apis/*/specifications/* /specifications/
 
 WORKDIR /tool
 
-CMD sh config.sh && sh run.sh
+CMD bash config.sh && bash run.sh
