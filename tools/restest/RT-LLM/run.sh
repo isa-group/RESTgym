@@ -10,7 +10,7 @@ ollama serve >/dev/null &
 OLLAMA_PID=$! # Capture the PID of the background server process
 
 echo "INFO: Post-processing testConf.yaml for $GENERATOR..."
-python3 "$SCRIPT_DIR/postprocess_testconf.py" "$CONFIG_DIR/testConf.yaml" "$SCRIPT_DIR/testConf.yaml"
+python3.11 "$SCRIPT_DIR/postprocess_testconf.py" "$CONFIG_DIR/testConf.yaml" "$SCRIPT_DIR/testConf.yaml"
 
 echo "INFO: Waiting for Ollama server to start (PID: $OLLAMA_PID)..."
 for i in $(seq 1 30); do
