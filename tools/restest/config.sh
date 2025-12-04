@@ -1,6 +1,7 @@
 #!/bin/bash
 
 echo "host=http://localhost:$PORT" >> common/config.properties
+cp /specifications/"$API".yaml common/swagger.yaml
 cp /specifications/"$API"-openapi.json common/openapi.json
 
 # Generate configuration based on the specification

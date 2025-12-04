@@ -1,35 +1,26 @@
 #!/bin/bash
-BASE_GENERATOR_DIR="/tool"
 
-run_generator_instance() {
-    local generator="$1"
-    local run_script="$1/run.sh"
+BASE_DIR="/tool"
+GENERATORS=(
+    "FT"
+    "RT"
+    "RT-LLM"
+)
 
-    while true; do
-        echo "INFO: Running $generator instance..."
+echo "INFO: Launching specified instances: ${GENERATORS[*]}"
 
-        bash "$run_script"
-        local exit_code=$?
+for GENERATOR in "${GENERATORS[@]}"; do
+    INSTANCE_DIR="$BASE_DIR/$GENERATOR"
+    if [ -d "$INSTANCE_DIR" ]; then
+        RUN_SCRIPT="$INSTANCE_DIR/run.sh"
 
-        if [ $exit_code -ne 0 ]; then
-            echo "ERROR: $generator instance failed with exit code $exit_code. Restarting in 3 seconds..."
-            sleep 3
+        if [ -f "$RUN_SCRIPT" ] && [ -x "$RUN_SCRIPT" ]; then
+            bash "$RUN_SCRIPT" &
         else
-            echo "INFO: $generator instance exited gracefully. Restarting..."
+            echo "ERROR: Instance $GENERATOR found, but '$RUN_SCRIPT' is missing or not executable. Skipping."
         fi
-    done
-}
-
-# Iterate through each subdirectory within the BASE_GENERATOR_DIR
-# We explicitly check for directory type (-d) to avoid issues with other file types.
-for generator_dir in "$BASE_GENERATOR_DIR"/*; do
-    if [ -d "$generator_dir" ]; then
-        generator=$(basename "$generator_dir")
-        run_script="$generator_dir/run.sh"
-
-        if [ -f "$run_script" ] && [ -x "$run_script" ]; then
-            run_generator_instance "$generator" &
-        fi
+    else
+        echo "ERROR: Instance $GENERATOR directory not found at '$INSTANCE_DIR'. Skipping."
     fi
 done
 

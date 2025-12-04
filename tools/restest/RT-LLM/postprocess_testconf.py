@@ -34,7 +34,7 @@ def main():
 
       # Case 2: Replace generators that are not RandomBoolean nor ParameterGenerator nor in body parameters
       if param_in != 'body':
-        csv_path = f"/tool/RT_LLM/{method}_{test_path}_{param_name}.csv"
+        csv_path = f"/tool/RT-LLM/generator-sources/{method}_{test_path}_{param_name}.csv"
         new_generator = {
           "type": "RandomInputValue",
           "genParameters": [
@@ -61,7 +61,7 @@ def main():
 
       # Case 5: Replace generators of body parameters with ObjectPerturbator
       if param_in == 'body':
-        json_path = f"/tool/RT_LLM/{method}_{test_path}_body.json"
+        json_path = f"/tool/RT-LLM/generator-sources/{method}_{test_path}_body.json"
         new_generator = {
           "type": "ObjectPerturbator",
           "genParameters": [

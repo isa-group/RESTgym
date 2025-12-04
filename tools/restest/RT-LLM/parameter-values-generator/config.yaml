@@ -1,0 +1,9 @@
+llm:
+  model_id: "llama3.2:3b" # Ollama model ID
+  temperature: 0.3
+  device: "cpu" # "cpu", "cuda", or "auto"
+  max_tokens: 3000
+
+generation:
+  n_valid_values: 9
+  n_invalid_values: 1
