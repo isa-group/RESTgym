@@ -5,9 +5,8 @@ GENERATOR=$(basename "$SCRIPT_DIR")
 JAR_PATH="/tool/restest-cli.jar"
 CONFIG_DIR="/tool/src/main/resources"
 
-echo "INFO: Starting Ollama server for '$GENERATOR' generator..."
-ollama serve >/dev/null &
-OLLAMA_PID=$! # Capture the PID of the background server process
+MIN_PORT=49152
+MAX_PORT=65535
 
 echo "INFO: Post-processing testConf.yaml for $GENERATOR..."
 python3.11 "$SCRIPT_DIR/postprocess_testconf.py" "$CONFIG_DIR/testConf.yaml" "$SCRIPT_DIR/testConf.yaml"
@@ -18,22 +17,48 @@ if [ $POSTPROCESS_TESTCONF_EXIT_CODE -ne 0 ]; then
     exit 1
 fi
 
-echo "INFO: Waiting for Ollama server to start (PID: $OLLAMA_PID)..."
-for i in $(seq 1 30); do
-    if ollama list >/dev/null 2>&1; then
-        echo "INFO: Ollama server started successfully."
-        break
-    else
-        : "$i"
-        sleep 2
-    fi
-done
+OLLAMA_PID=""
+while true; do
+    OLLAMA_PORT=$(shuf -i $MIN_PORT-$MAX_PORT -n 1)
+    export OLLAMA_HOST="127.0.0.1:$OLLAMA_PORT"
 
-if ! ollama list >/dev/null 2>&1; then
-    echo "ERROR: Ollama server failed to start within the expected time. Aborting model pull."
-    kill "$OLLAMA_PID"
-    exit 1
-fi
+    echo "INFO: Attempting to start Ollama server for '$GENERATOR' on $OLLAMA_HOST..."
+
+    kill "$(pgrep -f "ollama serve.*$OLLAMA_HOST")" 2>/dev/null || true
+
+    ollama serve > "$SCRIPT_DIR/ollama_log.txt" 2>&1 &
+    OLLAMA_PID=$!
+    sleep 0.5
+
+    if ! ps -p "$OLLAMA_PID" > /dev/null; then
+        echo "WARN: Ollama server (PID: $OLLAMA_PID) failed to start on $OLLAMA_HOST (port might be in use). Retrying with a new port..."
+        continue
+    fi
+
+    echo "INFO: Waiting for Ollama server to start (PID: $OLLAMA_PID) and be ready on $OLLAMA_HOST..."
+    SERVER_READY=false
+    for i in $(seq 1 30); do
+        if ollama list >/dev/null 2>&1; then
+            echo "INFO: Ollama server ready on $OLLAMA_HOST."
+            SERVER_READY=true
+            break
+        else
+            : "$i"
+            sleep 2
+        fi
+    done
+
+    if [ "$SERVER_READY" = false ]; then
+        echo "ERROR: Ollama server on $OLLAMA_HOST failed to become ready within time. Killing it and trying a new port."
+        kill "$OLLAMA_PID" || true
+        wait "$OLLAMA_PID" || true
+        OLLAMA_PID=""
+        continue
+    fi
+
+    echo "INFO: Ollama server for '$GENERATOR' successfully initialized on $OLLAMA_HOST."
+    break
+done
 
 RERUN_LLM=true
 
