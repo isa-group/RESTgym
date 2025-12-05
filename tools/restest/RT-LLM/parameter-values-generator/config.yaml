@@ -3,6 +3,7 @@ llm:
   temperature: 0.3
   device: "cpu" # "cpu", "cuda", or "auto"
   max_tokens: 3000
+  n_ctx: 4096
 
 generation:
   n_valid_values: 9
