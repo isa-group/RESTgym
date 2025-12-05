@@ -14,7 +14,7 @@ while true; do
         echo "ERROR: $GENERATOR instance failed with exit code $EXIT_CODE. Restarting in 3 seconds..."
         sleep 3
     else
-        echo "INFO: $GENERATOR instance exited gracefully. Restarting in 1 minute..."
-        sleep 60
+        echo "INFO: $GENERATOR instance exited gracefully. Restarting in 30 seconds..."
+        sleep 30
     fi
 done
