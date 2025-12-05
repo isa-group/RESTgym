@@ -7,7 +7,7 @@ RUN apt update && \
     apt -y upgrade && \
     apt -y install \
         git \
-        curl \
+        wget \
         openjdk-11-jdk \
         software-properties-common
 
@@ -17,20 +17,18 @@ RUN add-apt-repository ppa:deadsnakes/ppa -y && \
     apt -y install python3.11 python3.11-dev python3-pip && \
     python3.11 -m pip install --upgrade pip pyyaml
 
-# Install Ollama
-RUN curl -fsSL https://ollama.com/install.sh | sh
-
-# Pull LLM model
-COPY ./tools/restest/pull-llm-model.sh .
-RUN chmod +x ./pull-llm-model.sh && bash ./pull-llm-model.sh && rm -rf ./pull-llm-model.sh
-
 WORKDIR /tool
 
 # Clone parameter-values-generator and install dependencies
 RUN git clone https://github.com/juaaloval/testConfGenerator RT-LLM/parameter-values-generator && \
     cd RT-LLM/parameter-values-generator && \
-    git checkout d4fcced && \
+    git checkout 322b361 && \
     python3.11 -m pip install --no-cache-dir -r requirements.txt
+
+# Download LLM model
+RUN mkdir -p RT-LLM/parameter-values-generator/model && \
+    wget -P RT-LLM/parameter-values-generator/model \
+    https://huggingface.co/lmstudio-community/Llama-3.2-3B-Instruct-GGUF/resolve/main/Llama-3.2-3B-Instruct-Q4_K_M.gguf
 
 # Clone tool files
 COPY ./tools/restest/ /tool/
