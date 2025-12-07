@@ -5,6 +5,10 @@ GENERATOR=$(basename "$SCRIPT_DIR")
 JAR_PATH="/tool/restest-cli.jar"
 CONFIG_DIR="/tool/src/main/resources"
 
+# Thread controls for RT-LLM (fixed values)
+export OMP_NUM_THREADS=8
+export GGML_NUM_THREADS=8
+
 echo "INFO: Post-processing testConf.yaml for $GENERATOR..."
 python3.11 "$SCRIPT_DIR/postprocess_testconf.py" "$CONFIG_DIR/testConf.yaml" "$SCRIPT_DIR/testConf.yaml"
 POSTPROCESS_TESTCONF_EXIT_CODE=$?
