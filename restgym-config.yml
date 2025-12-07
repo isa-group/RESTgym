@@ -1,3 +1,3 @@
 minimum_cpus: 8
-minimum_ram_gb: 8
-time_budget_mins: 10
+minimum_ram_gb: 16
+time_budget_mins: 60

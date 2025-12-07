@@ -2,10 +2,10 @@ llm:
   model_path: "model/Llama-3.2-3B-Instruct-Q4_K_M.gguf" # Path to the local LLM
   temperature: 0.3
   device: "cpu" # "cpu", "cuda", or "auto"
-  max_tokens: 256
-  n_ctx: 1024
+  max_tokens: 512
+  n_ctx: 1536
   n_threads: 8
-  n_batch: 256
+  n_batch: 512
 
 generation:
   n_valid_values: 6

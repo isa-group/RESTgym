@@ -4,27 +4,36 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 GENERATOR=$(basename "$SCRIPT_DIR")
 JAR_PATH="/tool/restest-cli.jar"
 
-# Run the tool once, retrying up to 5 times on error
-MAX_RETRIES=5
+# Run the tool 5 times regardless of result; succeed if any run succeeds
+MAX_RUNS=5
 ATTEMPT=1
+ANY_SUCCESS=0
+LAST_EXIT_CODE=0
 
-echo "INFO: Running $GENERATOR instance (attempt $ATTEMPT/$MAX_RETRIES)"
-while [ $ATTEMPT -le $MAX_RETRIES ]; do
+while [ $ATTEMPT -le $MAX_RUNS ]; do
+    echo "INFO: Running $GENERATOR instance (attempt $ATTEMPT/$MAX_RUNS)"
     java -jar "$JAR_PATH" -g -e "$SCRIPT_DIR/user_config.properties" > /dev/null
     EXIT_CODE=$?
+    LAST_EXIT_CODE=$EXIT_CODE
 
     if [ $EXIT_CODE -eq 0 ]; then
-        echo "INFO: $GENERATOR completed successfully on attempt #$ATTEMPT."
-        exit 0
+        echo "INFO: Attempt #$ATTEMPT succeeded."
+        ANY_SUCCESS=1
+    else
+        echo "ERROR: Attempt #$ATTEMPT failed with exit code $EXIT_CODE."
     fi
 
-    if [ $ATTEMPT -lt $MAX_RETRIES ]; then
-        echo "ERROR: $GENERATOR failed with exit code $EXIT_CODE (attempt #$ATTEMPT). Retrying in 3 seconds..."
+    if [ $ATTEMPT -lt $MAX_RUNS ]; then
         sleep 3
-    else
-        echo "ERROR: $GENERATOR failed after $MAX_RETRIES attempts. Exit code: $EXIT_CODE."
-        exit $EXIT_CODE
     fi
 
     ATTEMPT=$((ATTEMPT + 1))
 done
+
+if [ $ANY_SUCCESS -eq 1 ]; then
+    echo "INFO: At least one attempt succeeded. Returning 0."
+    exit 0
+else
+    echo "ERROR: All $MAX_RUNS attempts failed. Returning last exit code: $LAST_EXIT_CODE."
+    exit $LAST_EXIT_CODE
+fi
