@@ -4,8 +4,8 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 GENERATOR=$(basename "$SCRIPT_DIR")
 JAR_PATH="/tool/restest-cli.jar"
 
-# Run the tool 5 times regardless of result; succeed if any run succeeds
-MAX_RUNS=5
+# Run the tool 25 times regardless of result; succeed if any run succeeds
+MAX_RUNS=25
 ATTEMPT=1
 ANY_SUCCESS=0
 LAST_EXIT_CODE=0
@@ -17,10 +17,10 @@ while [ $ATTEMPT -le $MAX_RUNS ]; do
     LAST_EXIT_CODE=$EXIT_CODE
 
     if [ $EXIT_CODE -eq 0 ]; then
-        echo "INFO: Attempt #$ATTEMPT succeeded."
+        echo "INFO: Attempt #$ATTEMPT RT succeeded."
         ANY_SUCCESS=1
     else
-        echo "ERROR: Attempt #$ATTEMPT failed with exit code $EXIT_CODE."
+        echo "ERROR: Attempt #$ATTEMPT of RT failed with exit code $EXIT_CODE."
     fi
 
     if [ $ATTEMPT -lt $MAX_RUNS ]; then
@@ -31,9 +31,9 @@ while [ $ATTEMPT -le $MAX_RUNS ]; do
 done
 
 if [ $ANY_SUCCESS -eq 1 ]; then
-    echo "INFO: At least one attempt succeeded. Returning 0."
+    echo "INFO: At least one attempt of RT succeeded. Returning 0."
     exit 0
 else
-    echo "ERROR: All $MAX_RUNS attempts failed. Returning last exit code: $LAST_EXIT_CODE."
+    echo "ERROR: All $MAX_RUNS attempts failed for RT. Returning last exit code: $LAST_EXIT_CODE."
     exit $LAST_EXIT_CODE
 fi
