@@ -18,6 +18,33 @@ if [ $POSTPROCESS_TESTCONF_EXIT_CODE -ne 0 ]; then
     exit 1
 fi
 
+# Select model based on number of API operations in $CONFIG_DIR/swagger.yaml
+echo "INFO: Calculating number of API operations from $CONFIG_DIR/swagger.yaml..."
+OP_COUNT=$(python3.11 "$SCRIPT_DIR/count_operations.py" "$CONFIG_DIR/swagger.yaml")
+COUNT_EXIT_CODE=$?
+if [ $COUNT_EXIT_CODE -ne 0 ]; then
+    echo "WARN: Could not determine API operation count (exit $COUNT_EXIT_CODE). Defaulting OP_COUNT=0."
+    OP_COUNT=0
+fi
+echo "INFO: API has $OP_COUNT operations. Selecting appropriate model..."
+
+MODEL_DIR="$SCRIPT_DIR/parameter-values-generator/model"
+DEST_MODEL="$MODEL_DIR/model.gguf"
+if [ "$OP_COUNT" -gt 40 ]; then
+    SRC_MODEL="$MODEL_DIR/llama-3.2-1b-instruct-q4_k_m.gguf"
+else
+    SRC_MODEL="$MODEL_DIR/Llama-3.2-3B-Instruct-Q4_K_M.gguf" 
+fi
+
+if [ -f "$SRC_MODEL" ]; then
+    mkdir -p "$MODEL_DIR"
+    mv -f "$SRC_MODEL" "$DEST_MODEL"
+    echo "INFO: Selected model: $(basename "$SRC_MODEL") -> $(basename "$DEST_MODEL")"
+else
+    echo "ERROR: Model file not found: $SRC_MODEL"
+    exit 1
+fi
+
 RERUN_LLM=true
 
 while true; do

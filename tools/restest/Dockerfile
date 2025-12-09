@@ -25,10 +25,15 @@ RUN git clone https://github.com/juaaloval/testConfGenerator RT-LLM/parameter-va
     git checkout ebf0a7f && \
     python3.11 -m pip install --no-cache-dir -r requirements.txt
 
-# Download LLM model
+# Download LLM model (Llama 3.2 3B Instruct GGUF)
 RUN mkdir -p RT-LLM/parameter-values-generator/model && \
     wget -P RT-LLM/parameter-values-generator/model \
     https://huggingface.co/lmstudio-community/Llama-3.2-3B-Instruct-GGUF/resolve/main/Llama-3.2-3B-Instruct-Q4_K_M.gguf
+
+    # Download LLM model (Llama 3.2 1B Instruct GGUF)
+RUN mkdir -p RT-LLM/parameter-values-generator/model && \
+    wget -P RT-LLM/parameter-values-generator/model \
+    https://huggingface.co/hugging-quants/Llama-3.2-1B-Instruct-Q4_K_M-GGUF/resolve/main/llama-3.2-1b-instruct-q4_k_m.gguf
 
 # Clone tool files
 COPY ./tools/restest/ /tool/

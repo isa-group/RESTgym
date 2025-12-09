@@ -1,5 +1,5 @@
 llm:
-  model_path: "model/Llama-3.2-3B-Instruct-Q4_K_M.gguf" # Path to the local LLM
+  model_path: "model/model.gguf" # Path to the local LLM
   temperature: 0.3
   device: "cpu" # "cpu", "cuda", or "auto"
   max_tokens: 512
