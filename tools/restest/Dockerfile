@@ -22,7 +22,7 @@ WORKDIR /tool
 # Clone parameter-values-generator and install dependencies
 RUN git clone https://github.com/juaaloval/testConfGenerator RT-LLM/parameter-values-generator && \
     cd RT-LLM/parameter-values-generator && \
-    git checkout 0af3081 && \
+    git checkout ebf0a7f && \
     python3.11 -m pip install --no-cache-dir -r requirements.txt
 
 # Download LLM model
