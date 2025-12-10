@@ -30,7 +30,7 @@ echo "INFO: API has $OP_COUNT operations. Selecting appropriate model..."
 
 MODEL_DIR="$SCRIPT_DIR/parameter-values-generator/model"
 DEST_MODEL="$MODEL_DIR/model.gguf"
-if [ "$OP_COUNT" -gt 40 ]; then
+if [ "$OP_COUNT" -gt 25 ]; then
     SRC_MODEL="$MODEL_DIR/llama-3.2-1b-instruct-q4_k_m.gguf"
 else
     SRC_MODEL="$MODEL_DIR/Llama-3.2-3B-Instruct-Q4_K_M.gguf" 
